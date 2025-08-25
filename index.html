@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Death Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --dark-black: #000000;
+            --blood-red: #8a0303;
+            --bright-red: #ff0000;
+            --light-red: #ff5252;
+            --text-color: #f5f5f5;
+            --card-bg: rgba(30, 30, 30, 0.9);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark-black) 0%, var(--primary-black) 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            color: var(--bright-red);
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: var(--light-red);
+        }
+        
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+            border: 1px solid var(--blood-red);
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            color: var(--bright-red);
+            position: relative;
+        }
+        
+        .form-title:after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: var(--blood-red);
+            margin: 15px auto;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid var(--blood-red);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--bright-red);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
+        button {
+            grid-column: span 2;
+            padding: 18px;
+            background: linear-gradient(to right, var(--blood-red), var(--bright-red));
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 50px 30px;
+        }
+        
+        .welcome-message {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            color: var(--bright-red);
+            position: relative;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .welcome-message:after {
+            content: '';
+            display: block;
+            width: 200px;
+            height: 3px;
+            background: var(--blood-red);
+            margin: 20px auto;
+        }
+        
+        .user-info {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 800px;
+            text-align: left;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+            border: 1px solid var(--blood-red);
+        }
+        
+        .user-info h3 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: var(--bright-red);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .info-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--blood-red);
+            display: flex;
+            font-size: 1.1rem;
+        }
+        
+        .info-item strong {
+            min-width: 180px;
+            color: var(--light-red);
+        }
+        
+        .visualization {
+            position: relative;
+            height: 400px;
+            margin: 60px auto;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+            border: 1px solid var(--blood-red);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .ghost-container {
+            width: 150px;
+            height: 200px;
+            position: relative;
+            transition: all 2s ease-in-out;
+            z-index: 10;
+            left: 10%;
+        }
+        
+        .ghost-image {
+            width: 100%;
+            height: 100%;
+            background: url('https://tse2.mm.bing.net/th/id/OIP.nTEcXztPQM-CDLddZ2tSdgHaHH?pid=Api&P=0&h=220') center/contain no-repeat;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .graveyard-container {
+            width: 250px;
+            height: 200px;
+            position: relative;
+        }
+        
+        .graveyard-image {
+            width: 100%;
+            height: 100%;
+            background: url('https://static.vecteezy.com/system/resources/previews/026/727/268/large_2x/scary-ghost-in-cemetery-illustration-free-photo.jpg') center/contain no-repeat;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+        }
+        
+        .timeline {
+            position: absolute;
+            bottom: 100px;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+        
+        .years-display {
+            font-size: 2.5rem;
+            margin: 40px 0;
+            color: var(--text-color);
+            background: var(--card-bg);
+            padding: 25px 40px;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+            border: 1px solid var(--blood-red);
+        }
+        
+        .years-display span {
+            color: var(--bright-red);
+            font-weight: bold;
+        }
+        
+        .try-again-btn {
+            padding: 15px 40px;
+            background: linear-gradient(to right, var(--blood-red), var(--bright-red));
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .try-again-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        @media (max-width: 1000px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            button {
+                grid-column: span 1;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 700px) {
+            .form-container {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .welcome-message {
+                font-size: 2.2rem;
+            }
+            
+            .ghost-container {
+                width: 120px;
+                height: 160px;
+            }
+            
+            .graveyard-container {
+                width: 180px;
+                height: 160px;
+            }
+            
+            .visualization {
+                height: 300px;
+                padding: 20px;
+            }
+            
+            .years-display {
+                font-size: 2rem;
+                padding: 15px 30px;
+            }
+            
+            .timeline {
+                left: 30px;
+                right: 30px;
+                bottom: 80px;
+            }
+        }
+
+        /* Animation for ghost */
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Pulse animation for emphasis */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .tombstone {
+            position: absolute;
+            bottom: 30px;
+            font-size: 24px;
+            opacity: 0.8;
+            z-index: 2;
+        }
+        
+        .tombstone:nth-child(1) { left: 25%; }
+        .tombstone:nth-child(2) { left: 35%; }
+        .tombstone:nth-child(3) { right: 25%; }
+        .tombstone:nth-child(4) { right: 35%; }
+    </style>
+</head>
+<body>
+      
+    <div class="container">
+        <!-- Form Page -->
+        <div id="form-page">
+            <header>
+                <h1>DEATH PREDICTION</h1>
+                <p class="tagline">Discover what fate has in store for you...</p>
+            </header>
+             <div class="disclaimer" style="
+        background: linear-gradient(to right, #8a0303, #600000);
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 5px solid #ff5252;
+        box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+    ">
+        <p style="margin: 0; display: flex; align-items: center;">
+            <span style="margin-right: 10px; font-size: 18px;">⚠️</span>
+            <span>
+                <strong style="color: #ffcccc;">Disclaimer:</strong> This website is for entertainment purposes only. 
+                The prediction algorithm is not based on real medical science and should not be taken seriously.
+            </span>
+        </p>
+    </div>
+            
+            <div class="form-container">
+                <h2 class="form-title">Your Personal Information</h2>
+                <form id="death-form" class="form-grid">
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="name" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age"><i class="fas fa-hourglass-half"></i> Age</label>
+                        <input type="number" id="age" required min="1" max="120" placeholder="Enter your age">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dob"><i class="fas fa-calendar"></i> Date of Birth</label>
+                        <input type="date" id="dob" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sex"><i class="fas fa-venus-mars"></i> Sex</label>
+                        <select id="sex" required>
+                            <option value="">Choose...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="smoke"><i class="fas fa-smoking"></i> Do you smoke?</label>
+                        <select id="smoke" required>
+                            <option value="">Choose...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                            <option value="sometimes">Sometimes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bmi"><i class="fas fa-weight"></i> BMI</label>
+                        <select id="bmi" required>
+                            <option value="">Choose...</option>
+                            <option value="under">Under 25</option>
+                            <option value="over">Over 25</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="outlook"><i class="fas fa-brain"></i> Outlook</label>
+                        <select id="outlook" required>
+                            <option value="">Choose...</option>
+                            <option value="positive">Positive</option>
+                            <option value="negative">Negative</option>
+                            <option value="realist">Realist</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="alcohol"><i class="fas fa-wine-glass"></i> Alcohol Consumption</label>
+                        <select id="alcohol" required>
+                            <option value="">Choose...</option>
+                            <option value="none">None</option>
+                            <option value="light">Light</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="heavy">Heavy</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country"><i class="fas fa-globe"></i> Country</label>
+                        <select id="country" required>
+                            <option value="">Choose...</option>
+                            <option value="usa">United States</option>
+                            <option value="uk">United Kingdom</option>
+                            <option value="uk">India</option>
+                            <option value="canada">Canada</option>
+                            <option value="australia">Australia</option>
+                            <option value="japan">Japan</option>
+                            <option value="germany">Germany</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fitness"><i class="fas fa-running"></i> Level of Fitness</label>
+                        <select id="fitness" required>
+                            <option value="">Choose...</option>
+                            <option value="sedentary">Sedentary</option>
+                            <option value="light">Light</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="active">Active</option>
+                            <option value="athlete">Athlete</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diet"><i class="fas fa-utensils"></i> Diet Rating</label>
+                        <select id="diet" required>
+                            <option value="">Choose...</option>
+                            <option value="poor">Poor</option>
+                            <option value="average">Average</option>
+                            <option value="good">Good</option>
+                            <option value="excellent">Excellent</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit"><i class="fas fa-skull"></i> REVEAL YOUR FATE</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Result Page -->
+        <div id="result-page" class="result-container">
+            <header>
+                <h1>YOUR FATE IS SEALED</h1>
+            </header>
+            
+            <h2 class="welcome-message" id="welcome-message">Welcome, <span id="user-name">Name</span>!</h2>
+            
+            <div class="user-info">
+                <h3><i class="fas fa-scroll"></i> Your Information</h3>
+                <div class="info-grid" id="user-info-grid">
+                    <!-- Information will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="years-display">
+                <i class="fas fa-hourglass-end"></i> You have <span id="years-left">XX</span> years remaining <i class="fas fa-hourglass-end"></i>
+            </div>
+            
+            <div class="visualization">
+                <div class="timeline"></div>
+                <div class="ghost-container" id="ghost-container">
+                    <div class="ghost-image"></div>
+                </div>
+                <div class="graveyard-container">
+                    <div class="graveyard-image"></div>
+                </div>
+            </div>
+            
+            <button class="try-again-btn" onclick="window.location.reload()"><i class="fas fa-redo"></i> TRY AGAIN</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('death-form');
+            const formPage = document.getElementById('form-page');
+            const resultPage = document.getElementById('result-page');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const userName = document.getElementById('user-name');
+            const userInfoGrid = document.getElementById('user-info-grid');
+            const yearsLeftElement = document.getElementById('years-left');
+            const ghostContainer = document.getElementById('ghost-container');
+            
+            // Calculate years to live (this is a simplified simulation)
+            function calculateYears(data) {
+                let years = 80 - data.age;
+                
+                // Adjust based on factors (this is just for demonstration)
+                if (data.smoke === 'yes') years -= 10;
+                if (data.smoke === 'sometimes') years -= 5;
+                
+                if (data.bmi === 'over') years -= 5;
+                
+                if (data.alcohol === 'moderate') years -= 2;
+                if (data.alcohol === 'heavy') years -= 7;
+                
+                if (data.fitness === 'sedentary') years -= 5;
+                if (data.fitness === 'active') years += 3;
+                if (data.fitness === 'athlete') years += 5;
+                
+                if (data.diet === 'poor') years -= 4;
+                if (data.diet === 'good') years += 3;
+                if (data.diet === 'excellent') years += 5;
+                
+                if (data.outlook === 'positive') years += 3;
+                if (data.outlook === 'negative') years -= 3;
+                
+                // Country adjustments
+                if (data.country === 'japan') years += 5;
+                if (data.country === 'germany') years += 2;
+                if (data.country === 'other') years -= 3;
+                
+                // Sex adjustments
+                if (data.sex === 'female') years += 3;
+                
+                // Ensure years is not negative and has a reasonable maximum
+                years = Math.max(1, Math.min(years, 100));
+                
+                return years;
+            }
+            
+            // Position ghost based on years left
+            function positionGhost(years) {
+                // More years = more distance between ghost and graveyard
+                // We want to invert the percentage so that fewer years = closer to graveyard
+                const percentage = 1 - (years / 100);
+                const visualization = document.querySelector('.visualization');
+                const visualizationWidth = visualization.offsetWidth - ghostContainer.offsetWidth - 250; // 250px is graveyard width
+                const ghostPosition = 50 + (percentage * visualizationWidth);
+                
+                ghostContainer.style.left = `${ghostPosition}px`;
+                
+                // Add animation class
+                document.querySelector('.ghost-image').classList.add('pulse');
+            }
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const formData = {
+                    name: document.getElementById('name').value,
+                    age: parseInt(document.getElementById('age').value),
+                    dob: document.getElementById('dob').value,
+                    sex: document.getElementById('sex').value,
+                    smoke: document.getElementById('smoke').value,
+                    bmi: document.getElementById('bmi').value,
+                    outlook: document.getElementById('outlook').value,
+                    alcohol: document.getElementById('alcohol').value,
+                    country: document.getElementById('country').value,
+                    fitness: document.getElementById('fitness').value,
+                    diet: document.getElementById('diet').value
+                };
+                
+                // Calculate years left
+                const yearsLeft = calculateYears(formData);
+                
+                // Update welcome message
+                userName.textContent = formData.name;
+                
+                // Update user info grid
+                userInfoGrid.innerHTML = `
+                    <div class="info-item"><strong>Age:</strong> ${formData.age}</div>
+                    <div class="info-item"><strong>Date of Birth:</strong> ${formData.dob}</div>
+                    <div class="info-item"><strong>Sex:</strong> ${formData.sex.charAt(0).toUpperCase() + formData.sex.slice(1)}</div>
+                    <div class="info-item"><strong>Smoker:</strong> ${formData.smoke.charAt(0).toUpperCase() + formData.smoke.slice(1)}</div>
+                    <div class="info-item"><strong>BMI:</strong> ${formData.bmi === 'under' ? 'Under 25' : 'Over 25'}</div>
+                    <div class="info-item"><strong>Outlook:</strong> ${formData.outlook.charAt(0).toUpperCase() + formData.outlook.slice(1)}</div>
+                    <div class="info-item"><strong>Alcohol:</strong> ${formData.alcohol.charAt(0).toUpperCase() + formData.alcohol.slice(1)}</div>
+                    <div class="info-item"><strong>Country:</strong> ${document.getElementById('country').options[document.getElementById('country').selectedIndex].text}</div>
+                    <div class="info-item"><strong>Fitness Level:</strong> ${formData.fitness.charAt(0).toUpperCase() + formData.fitness.slice(1)}</div>
+                    <div class="info-item"><strong>Diet Rating:</strong> ${formData.diet.charAt(0).toUpperCase() + formData.diet.slice(1)}</div>
+                `;
+                
+                // Update years left
+                yearsLeftElement.textContent = yearsLeft;
+                
+                // Position the ghost
+                setTimeout(() => {
+                    positionGhost(yearsLeft);
+                }, 100);
+                
+                // Show result page, hide form page
+                formPage.style.display = 'none';
+                resultPage.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
